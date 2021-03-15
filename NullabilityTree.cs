@@ -96,7 +96,7 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
 
             if (ConcreteType.IsValueType)
             {
-                flag = Nullable.GetUnderlyingType(ConcreteType) == null ? 1 : 2;
+                flag = Nullable.GetUnderlyingType(ConcreteType) == null ? (byte)1 : (byte)2;
             }
             else
             {
