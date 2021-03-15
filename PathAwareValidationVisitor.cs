@@ -36,6 +36,9 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
             }
         }
 
+        // This is taken largely in whole from ValidationVisitor, with only minor
+        // modification to pass the extra parameters to PathAwareModelValidationContext
+        // https://github.com/dotnet/aspnetcore/blob/main/src/Mvc/Mvc.Core/src/ModelBinding/Validation/ValidationVisitor.cs
         protected override bool ValidateNode()
         {
             if (this.Metadata is not DefaultModelMetadata)
