@@ -36,11 +36,11 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
         public static NullabilityTree UnpackFlags(Type PropertyType, IEnumerable<object> PropertyAttributes, IEnumerable<object> ClassAttributes)
         {
             Stack<byte>? flags = null;
-            byte? contextFlag = null;
+            byte? contextFlag;
 
             if (TryGetNullableFlags(PropertyAttributes, out var propFlags))
             {
-                flags = new Stack<byte>(propFlags.Reverse());
+                ConstructFlags(propFlags, out flags, out contextFlag);
             }
             else
             {
@@ -50,14 +50,14 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
             return Traverse(PropertyType, flags, contextFlag);
         }
 
-        public static NullabilityTree UnpackFlags(Type PropertyType, IEnumerable<object> ParameterAttributes, IEnumerable<object> MethodAttributes, IEnumerable<object> ClassAttributes)
+        public static NullabilityTree UnpackFlags(Type ParameterType, IEnumerable<object> ParameterAttributes, IEnumerable<object> MethodAttributes, IEnumerable<object> ClassAttributes)
         {
             Stack<byte>? flags = null;
-            byte? contextFlag = null;
+            byte? contextFlag;
 
             if (TryGetNullableFlags(ParameterAttributes, out var propFlags))
             {
-                flags = new Stack<byte>(propFlags.Reverse());
+                ConstructFlags(propFlags, out flags, out contextFlag);
             }
             else
             {
@@ -65,7 +65,35 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
                     _ = TryGetNullableContextFlag(ClassAttributes, out contextFlag);
             }
 
-            return Traverse(PropertyType, flags, contextFlag);
+            return Traverse(ParameterType, flags, contextFlag);
+        }
+
+        public static byte GetTypeDefParameterFlag(Type TypeDefParameter)
+        {
+            if (!TypeDefParameter.IsGenericTypeParameter || TypeDefParameter.DeclaringType == null)
+                throw new ArgumentException("Argument is not a generic type parameter", nameof(TypeDefParameter));
+
+            if (TryGetNullableFlags(TypeDefParameter.GetCustomAttributes(false), out var paramFlags))
+                return paramFlags[0];
+
+            if (TryGetNullableContextFlag(TypeDefParameter.DeclaringType.GetCustomAttributes(false), out var contextFlag))
+                return contextFlag.Value;
+
+            return 0;
+        }
+
+        private static void ConstructFlags(byte[] Value, out Stack<byte>? Flags, out byte? ContextFlag)
+        {
+            if (Value.Length == 1)
+            {
+                Flags = null;
+                ContextFlag = Value[0];
+            }
+            else
+            {
+                Flags = new Stack<byte>(Value.Reverse());
+                ContextFlag = null;
+            }
         }
 
         private static NullabilityTree Traverse(Type ConcreteType, Stack<byte>? Flags, byte? ContextFlag)
