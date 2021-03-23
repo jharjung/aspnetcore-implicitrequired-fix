@@ -207,6 +207,10 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
             if (PropertyMetadata.PropertyName == null)
                 throw new InvalidOperationException("No property name");
 
+            var propInfo = PropertyMetadata.ContainerType.GetProperty(PropertyMetadata.Name!, BindingFlags.Public | BindingFlags.Instance);
+            var declaringType = propInfo?.DeclaringType ?? PropertyMetadata.ContainerType;
+            var declaringClassAttrs = declaringType == PropertyMetadata.ContainerType ? ContainerMetadata.Attributes.TypeAttributes : declaringType.GetCustomAttributes(false);
+
             if (PropertyMetadata.ContainerType.IsGenericType)
             {
                 var typeDef = PropertyMetadata.ContainerType.GetGenericTypeDefinition();
@@ -230,13 +234,13 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
                         );
 
                     return NullabilityTree
-                        .UnpackFlags(PropertyMetadata.ModelType, PropertyMetadata.Attributes.PropertyAttributes, ContainerMetadata.Attributes.TypeAttributes)
+                        .UnpackFlags(PropertyMetadata.ModelType, PropertyMetadata.Attributes.PropertyAttributes, declaringClassAttrs)
                         .Apply(classArgsNullability);
                 }
             }
 
             return NullabilityTree
-                .UnpackFlags(PropertyMetadata.ModelType, PropertyMetadata.Attributes.PropertyAttributes, ContainerMetadata.Attributes.TypeAttributes);
+                .UnpackFlags(PropertyMetadata.ModelType, PropertyMetadata.Attributes.PropertyAttributes, declaringClassAttrs);
         }
     }
 }
