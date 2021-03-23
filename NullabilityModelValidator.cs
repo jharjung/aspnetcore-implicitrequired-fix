@@ -207,7 +207,7 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
             if (PropertyMetadata.PropertyName == null)
                 throw new InvalidOperationException("No property name");
 
-            var propInfo = PropertyMetadata.ContainerType.GetProperty(PropertyMetadata.Name!, BindingFlags.Public | BindingFlags.Instance);
+            var propInfo = PropertyMetadata.ContainerType.GetProperty(PropertyMetadata.PropertyName, BindingFlags.Public | BindingFlags.Instance);
             var declaringType = propInfo?.DeclaringType ?? PropertyMetadata.ContainerType;
             var declaringClassAttrs = declaringType == PropertyMetadata.ContainerType ? ContainerMetadata.Attributes.TypeAttributes : declaringType.GetCustomAttributes(false);
 
