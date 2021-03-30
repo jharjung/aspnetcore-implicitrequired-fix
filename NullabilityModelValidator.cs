@@ -40,7 +40,7 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
             if (Context is PathAwareModelValidationContext ctx &&
                 Context.ActionContext is ControllerContext actionCtx)
             {
-                if (ctx.Model == null)
+                if (ctx.Model == null && actionCtx.ModelState.ErrorCount == 0)
                 {
                     var key = (actionCtx.ActionDescriptor.MethodInfo, ctx.RootModelMetadata.ParameterName!, ctx.Path);
 
