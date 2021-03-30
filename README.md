@@ -44,6 +44,7 @@ mvcCore.AddMvcOptions(opts =>
   opts.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
   
   // Inject the nullability validator
+  opts.ModelMetadataDetailsProviders.Insert(0, new NullabilityValidationMetadataProvider());
   opts.ModelValidatorProviders.Insert(0, new NullabilityModelValidatorProvider());
 });
 ```
