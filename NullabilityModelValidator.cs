@@ -53,7 +53,7 @@ namespace JoeHarjung.AspNetCore.ImplicitRequiredFix
                     });
 
                     if (flag == 1)
-                        yield return new ModelValidationResult("", $"The {ctx.ModelMetadata.DisplayName} field is required.");
+                        yield return new ModelValidationResult("", $"The {ctx.ModelMetadata.GetDisplayName()} field is required.");
                 }
             }
             else
